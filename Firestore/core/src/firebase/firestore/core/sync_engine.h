@@ -91,6 +91,10 @@ class SyncEngine : public remote::RemoteStoreCallback, public QueryEventSource {
   SyncEngine(local::LocalStore* local_store,
              remote::RemoteStore* remote_store,
              const auth::User& initial_user);
+  SyncEngine(local::LocalStore* local_store,
+             remote::RemoteStore* remote_store,
+             const auth::User& initial_user,
+             std::size_t max_concurrent_limbo_resolutions);
 
   // Implements `QueryEventSource`.
   void SetCallback(SyncEngineCallback* callback) override {
@@ -145,10 +149,17 @@ class SyncEngine : public remote::RemoteStoreCallback, public QueryEventSource {
   model::DocumentKeySet GetRemoteKeys(model::TargetId target_id) const override;
 
   // For tests only
-  std::map<model::DocumentKey, model::TargetId> GetCurrentLimboDocuments()
-      const {
+  std::map<model::DocumentKey, model::TargetId>
+  GetActiveLimboDocumentResolutions() const {
     // Return defensive copy
     return limbo_targets_by_key_;
+  }
+
+  // For tests only
+  std::queue<model::DocumentKey> GetDocumentsEnqueuedForLimboResolution()
+      const {
+    // Return defensive copy
+    return limbo_listen_queue_;
   }
 
  private:
@@ -231,6 +242,27 @@ class SyncEngine : public remote::RemoteStoreCallback, public QueryEventSource {
 
   void TrackLimboChange(const LimboDocumentChange& limbo_change);
 
+  /**
+   * Starts listens for documents in limbo that are enqueued for resolution.
+   *
+   * When a document goes into limbo it is enqueued for resolution. This method
+   * repeatedly removes entries from the limbo resolution queue and starts a
+   * listen for them until either (1) the queue is empty, meaning that all
+   * documents that were in limbo either have active listens or have been
+   * resolved, or (2) the maximum number of concurrent limbo resolution listens
+   * has been reached.
+   *
+   * This method is invoked every time an entry is added to the limbo
+   * resolution queue and every time that a limbo resolution listen completes
+   * (either successfully or unsuccessfully). This ensures that all documents in
+   * limbo are eventually resolved.
+   *
+   * A maximum number of concurrent limbo resolution listens was implemented to
+   * prevent an unbounded number of active limbo resolution listens that can
+   * exhaust server resources and result in "resource exhausted" errors.
+   */
+  void PumpLimboResolutionListenQueue();
+
   void NotifyUser(model::BatchId batch_id, util::Status status);
 
   /**
@@ -272,6 +304,20 @@ class SyncEngine : public remote::RemoteStoreCallback, public QueryEventSource {
 
   /** Queries mapped to Targets, indexed by target ID. */
   std::unordered_map<model::TargetId, std::vector<Query>> queries_by_target_;
+
+  /**
+   * The maximum number of concurrently-active limbo resolution queries.
+   *
+   * Once this number of limbo resolution queries is active, if another limbo
+   * resolution is needed then it is queued up in limbo_listen_queue_.
+   */
+  const std::size_t max_concurrent_limbo_resolutions_;
+
+  /**
+   * The keys of documents that are in limbo for which we haven't yet started a
+   * limbo resolution query.
+   */
+  std::queue<model::DocumentKey> limbo_listen_queue_;
 
   /**
    * When a document is in limbo, we create a special listen to resolve it. This

@@ -724,7 +724,7 @@ ByteString MakeResumeToken(NSString *specString) {
 
 - (void)validateLimboDocuments {
   // Make a copy so it can modified while checking against the expected limbo docs.
-  std::map<DocumentKey, TargetId> actualLimboDocs = self.driver.currentLimboDocuments;
+  std::map<DocumentKey, TargetId> actualLimboDocs = self.driver.activeLimboDocumentResolutions;
 
   // Validate that each limbo doc has an expected active target
   for (const auto &kv : actualLimboDocs) {

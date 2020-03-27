@@ -83,10 +83,18 @@ bool ErrorIsInteresting(const Status& error) {
 SyncEngine::SyncEngine(LocalStore* local_store,
                        remote::RemoteStore* remote_store,
                        const auth::User& initial_user)
+    : SyncEngine(local_store, remote_store, initial_user, 100) {
+}
+
+SyncEngine::SyncEngine(LocalStore* local_store,
+                       remote::RemoteStore* remote_store,
+                       const auth::User& initial_user,
+                       std::size_t max_concurrent_limbo_resolutions)
     : local_store_(local_store),
       remote_store_(remote_store),
       current_user_(initial_user),
-      target_id_generator_(TargetIdGenerator::SyncEngineTargetIdGenerator()) {
+      target_id_generator_(TargetIdGenerator::SyncEngineTargetIdGenerator()),
+      max_concurrent_limbo_resolutions_(max_concurrent_limbo_resolutions) {
 }
 
 void SyncEngine::AssertCallbackExists(absl::string_view source) {
@@ -308,6 +316,7 @@ void SyncEngine::HandleRejectedListen(TargetId target_id, Status error) {
     // So go ahead and remove it from bookkeeping.
     limbo_targets_by_key_.erase(limbo_key);
     limbo_resolutions_by_target_.erase(target_id);
+    PumpLimboResolutionListenQueue();
 
     // TODO(dimond): Retry on transient errors?
 
@@ -529,15 +538,24 @@ void SyncEngine::TrackLimboChange(const LimboDocumentChange& limbo_change) {
 
   if (limbo_targets_by_key_.find(key) == limbo_targets_by_key_.end()) {
     LOG_DEBUG("New document in limbo: %s", key.ToString());
+    limbo_listen_queue_.push(key);
+    PumpLimboResolutionListenQueue();
+  }
+}
 
+void SyncEngine::PumpLimboResolutionListenQueue() {
+  while (!limbo_listen_queue_.empty() &&
+         limbo_targets_by_key_.size() < max_concurrent_limbo_resolutions_) {
+    model::DocumentKey key = limbo_listen_queue_.front();
+    limbo_listen_queue_.pop();
     TargetId limbo_target_id = target_id_generator_.NextId();
+    limbo_resolutions_by_target_.emplace(limbo_target_id, LimboResolution{key});
+    limbo_targets_by_key_[key] = limbo_target_id;
     Query query(key.path());
     TargetData target_data(query.ToTarget(), limbo_target_id,
                            kIrrelevantSequenceNumber,
                            QueryPurpose::LimboResolution);
-    limbo_resolutions_by_target_.emplace(limbo_target_id, LimboResolution{key});
     remote_store_->Listen(target_data);
-    limbo_targets_by_key_[key] = limbo_target_id;
   }
 }
 
@@ -552,6 +570,7 @@ void SyncEngine::RemoveLimboTarget(const DocumentKey& key) {
   remote_store_->StopListening(limbo_target_id);
   limbo_targets_by_key_.erase(key);
   limbo_resolutions_by_target_.erase(limbo_target_id);
+  PumpLimboResolutionListenQueue();
 }
 
 }  // namespace core
