@@ -129,6 +129,7 @@ typedef std::unordered_map<auth::User, NSMutableArray<FSTOutstandingWrite *> *, 
 - (instancetype)initWithPersistence:(std::unique_ptr<local::Persistence>)persistence
                         initialUser:(const auth::User &)initialUser
                   outstandingWrites:(const FSTOutstandingWriteQueues &)outstandingWrites
+      maxConcurrentLimboResolutions:(absl::optional<int>)maxConcurrentLimboResolutions
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
