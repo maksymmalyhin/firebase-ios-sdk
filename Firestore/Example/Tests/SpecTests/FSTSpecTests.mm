@@ -150,6 +150,24 @@ ByteString MakeResumeToken(NSString *specString) {
   return MakeByteString([specString dataUsingEncoding:NSUTF8StringEncoding]);
 }
 
+NSString *ToDocumentListString(const std::map<DocumentKey, TargetId> &map) {
+  NSMutableArray<NSString *> *array = [NSMutableArray new];
+  for (const auto &kv : map) {
+    [array addObject:[NSString stringWithFormat:@"%s", kv.first.ToString().c_str()]];
+  }
+  [array sortUsingSelector:@selector(compare:)];
+  return [array componentsJoinedByString:@", "];
+}
+
+NSString *ToTargetIdListString(const ActiveTargetMap &map) {
+  NSMutableArray<NSNumber *> *array = [NSMutableArray new];
+  for (const auto &kv : map) {
+    [array addObject:@(kv.first)];
+  }
+  [array sortUsingSelector:@selector(compare:)];
+  return [array componentsJoinedByString:@", "];
+}
+
 }  // namespace
 
 @interface FSTSpecTests ()
@@ -661,14 +679,14 @@ ByteString MakeResumeToken(NSString *specString) {
       XCTAssertEqual([self.driver watchStreamRequestCount],
                      [expectedState[@"watchStreamRequestCount"] intValue]);
     }
-    if (expectedState[@"limboDocs"]) {
-      DocumentKeySet expectedLimboDocuments;
-      NSArray *docNames = expectedState[@"limboDocs"];
+    if (expectedState[@"activeLimboDocs"]) {
+      DocumentKeySet expectedActiveLimboDocuments;
+      NSArray *docNames = expectedState[@"activeLimboDocs"];
       for (NSString *name in docNames) {
-        expectedLimboDocuments = expectedLimboDocuments.insert(FSTTestDocKey(name));
+        expectedActiveLimboDocuments = expectedActiveLimboDocuments.insert(FSTTestDocKey(name));
       }
-      // Update the expected limbo documents
-      [self.driver setExpectedLimboDocuments:std::move(expectedLimboDocuments)];
+      // Update the expected active limbo documents
+      [self.driver setExpectedActiveLimboDocuments:std::move(expectedActiveLimboDocuments)];
     }
     if (expectedState[@"activeTargets"]) {
       __block ActiveTargetMap expectedActiveTargets;
@@ -696,8 +714,8 @@ ByteString MakeResumeToken(NSString *specString) {
 
   // Always validate the we received the expected number of callbacks.
   [self validateUserCallbacks:expectedState];
-  // Always validate that the expected limbo docs match the actual limbo docs.
-  [self validateLimboDocuments];
+  // Always validate that the expected active limbo docs match the actual active limbo docs.
+  [self validateActiveLimboDocuments];
   // Always validate that the expected active targets match the actual active targets.
   [self validateActiveTargets];
 }
@@ -722,25 +740,29 @@ ByteString MakeResumeToken(NSString *specString) {
   }
 }
 
-- (void)validateLimboDocuments {
+- (void)validateActiveLimboDocuments {
   // Make a copy so it can modified while checking against the expected limbo docs.
   std::map<DocumentKey, TargetId> actualLimboDocs = self.driver.activeLimboDocumentResolutions;
 
-  // Validate that each limbo doc has an expected active target
+  // Validate that each active limbo doc has an expected active target
   for (const auto &kv : actualLimboDocs) {
     const auto &expected = [self.driver expectedActiveTargets];
+    NSString *expectedTargetIdsStr = ToTargetIdListString(expected);
     XCTAssertTrue(expected.find(kv.second) != expected.end(),
-                  @"Found limbo doc without an expected active target");
+                  @"Found limbo doc %s, but its target ID %d was not in the set of expected "
+                  @"active target IDs (%@)",
+                  kv.first.ToString().c_str(), kv.second, expectedTargetIdsStr);
   }
 
-  for (const DocumentKey &expectedLimboDoc : self.driver.expectedLimboDocuments) {
+  for (const DocumentKey &expectedLimboDoc : self.driver.expectedActiveLimboDocuments) {
     XCTAssert(actualLimboDocs.find(expectedLimboDoc) != actualLimboDocs.end(),
               @"Expected doc to be in limbo, but was not: %s", expectedLimboDoc.ToString().c_str());
     actualLimboDocs.erase(expectedLimboDoc);
   }
-  XCTAssertTrue(actualLimboDocs.empty(), "%lu Unexpected docs in limbo, the first one is <%s, %d>",
-                actualLimboDocs.size(), actualLimboDocs.begin()->first.ToString().c_str(),
-                actualLimboDocs.begin()->second);
+
+  NSString *unexpectedDocsStr = ToDocumentListString(actualLimboDocs);
+  XCTAssertTrue(actualLimboDocs.empty(), "%lu Unexpected active docs in limbo: %@",
+                actualLimboDocs.size(), unexpectedDocsStr);
 }
 
 - (void)validateActiveTargets {

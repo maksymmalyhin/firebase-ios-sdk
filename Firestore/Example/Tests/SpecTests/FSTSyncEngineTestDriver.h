@@ -292,11 +292,11 @@ typedef std::unordered_map<auth::User, NSMutableArray<FSTOutstandingWrite *> *, 
 /** The current set of documents in limbo with active targets. */
 - (std::map<model::DocumentKey, model::TargetId>)activeLimboDocumentResolutions;
 
-/** The expected set of documents in limbo. */
-- (const model::DocumentKeySet &)expectedLimboDocuments;
+/** The expected set of documents in limbo with active targets. */
+- (const model::DocumentKeySet &)expectedActiveLimboDocuments;
 
-/** Sets the expected set of documents in limbo. */
-- (void)setExpectedLimboDocuments:(model::DocumentKeySet)docs;
+/** Sets the expected set of documents in limbo that are expected to have active targets. */
+- (void)setExpectedActiveLimboDocuments:(model::DocumentKeySet)docs;
 
 /**
  * The writes that have been sent to the FSTSyncEngine via writeUserMutation: but not yet
