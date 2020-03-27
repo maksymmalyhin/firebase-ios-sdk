@@ -5057,8 +5057,7 @@
     "describeName": "Limbo Documents:",
     "itName": "Limbo resolution throttling with all results at once from watch",
     "tags": [
-      "no-android",
-      "no-ios"
+      "no-android"
     ],
     "config": {
       "useGarbageCollection": true,
@@ -5595,8 +5594,7 @@
     "describeName": "Limbo Documents:",
     "itName": "Limbo resolution throttling with results one at a time from watch",
     "tags": [
-      "no-android",
-      "no-ios"
+      "no-android"
     ],
     "config": {
       "useGarbageCollection": true,
@@ -6254,8 +6252,7 @@
     "describeName": "Limbo Documents:",
     "itName": "Limbo resolution throttling when a limbo listen is rejected.",
     "tags": [
-      "no-android",
-      "no-ios"
+      "no-android"
     ],
     "config": {
       "useGarbageCollection": true,
@@ -6562,8 +6559,7 @@
     "describeName": "Limbo Documents:",
     "itName": "Limbo resolution throttling with existence filter mismatch",
     "tags": [
-      "no-android",
-      "no-ios"
+      "no-android"
     ],
     "config": {
       "useGarbageCollection": true,
