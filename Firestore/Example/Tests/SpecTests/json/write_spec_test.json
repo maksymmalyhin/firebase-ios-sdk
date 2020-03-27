@@ -5041,7 +5041,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": [],
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": [],
           "writeStreamRequestCount": 3
         },
         "expectedSnapshotEvents": [
@@ -7548,7 +7549,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": [],
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": [],
           "writeStreamRequestCount": 3
         }
       },
@@ -9550,7 +9552,8 @@
         "shutdown": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 0
       },
@@ -10428,7 +10431,8 @@
         "shutdown": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 0
       },

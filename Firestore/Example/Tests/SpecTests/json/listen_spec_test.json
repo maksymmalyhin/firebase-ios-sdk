@@ -1822,7 +1822,8 @@
         "restart": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         }
       },
       {
@@ -3245,7 +3246,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "expectedSnapshotEvents": [
           {
@@ -5311,7 +5313,8 @@
         "restart": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         }
       },
       {
@@ -5506,7 +5509,8 @@
         "restart": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         }
       },
       {
@@ -9695,7 +9699,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 0
       },
@@ -9877,7 +9882,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 1
       },
@@ -9926,7 +9932,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "expectedSnapshotEvents": [
           {
@@ -10154,7 +10161,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "expectedSnapshotEvents": [
           {
@@ -10389,7 +10397,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 1
       },
@@ -10462,7 +10471,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": [],
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": [],
           "isPrimary": true
         },
         "clientIndex": 0
@@ -10532,7 +10542,8 @@
         "enableNetwork": false,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "expectedSnapshotEvents": [
           {
@@ -10552,7 +10563,8 @@
         "shutdown": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 0
       },
@@ -10786,7 +10798,8 @@
         "shutdown": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 0
       },
@@ -11089,7 +11102,8 @@
         "shutdown": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 0
       },
@@ -12260,7 +12274,8 @@
         "shutdown": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 0
       },
@@ -12512,7 +12527,8 @@
         "shutdown": true,
         "expectedState": {
           "activeTargets": {},
-          "limboDocs": []
+          "activeLimboDocs": [],
+          "inactiveLimboDocs": []
         },
         "clientIndex": 1
       },
