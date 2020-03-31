@@ -2922,7 +2922,7 @@
     return found.count == expected.count;
   }];
   XCTAssertEqualObjects(expected, found);
-  
+
   if (!online) {
     [ref.repo resume];
   }
@@ -2962,7 +2962,7 @@
     return found.count == expected.count;
   }];
   XCTAssertEqualObjects(expected, found);
-  
+
   if (!online) {
     [ref.repo resume];
   }
