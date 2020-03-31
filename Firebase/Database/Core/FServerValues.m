@@ -204,7 +204,6 @@ BOOL canBeRepresentedAsLong(NSNumber *num) {
     return resolved;
 }
 
-
 + (id<FNode>)resolveDeferredValueSnapshot:(id<FNode>)node
                              withSyncTree:(FSyncTree *)tree
                                    atPath:(FPath *)path
