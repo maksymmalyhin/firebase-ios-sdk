@@ -95,7 +95,7 @@ BOOL canBeRepresentedAsLong(NSNumber *num) {
 }
 
 - (id<FNode>)value {
-    return self.snapshot.val;
+    return self.snapshot;
 }
 @end
 
