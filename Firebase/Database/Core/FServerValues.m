@@ -204,8 +204,9 @@ BOOL canBeRepresentedAsLong(NSNumber *num) {
     return resolved;
 }
 
+
 + (id<FNode>)resolveDeferredValueSnapshot:(id<FNode>)node
-                             withExisting:(FSyncTree *)tree
+                             withSyncTree:(FSyncTree *)tree
                                    atPath:(FPath *)path
                              serverValues:(NSDictionary *)serverValues {
     id<ValueProvider> jitExisting =
